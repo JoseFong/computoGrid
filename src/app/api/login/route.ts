@@ -14,7 +14,8 @@ export async function POST(req:NextRequest){
             const match = await bcrypt.compare(data.password,organizacion.password)
         if(!match)
             return NextResponse.json({message:"Usuario o contraseña incorrectos."},{status:400})
-        return NextResponse.json({message:organizacion.id},{status:200})
+        
+        return NextResponse.json(organizacion)
     }catch(e:any){
         return NextResponse.json({message:"Error interno del servidor."},{status:500})
     }

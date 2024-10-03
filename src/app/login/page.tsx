@@ -26,7 +26,8 @@ function Login() {
         .post("/api/login", data)
         .then((response) => {
           toast.success("Inicio de sesión exitoso.", { id: "t" });
-          localStorage.setItem("usernameGrid", response.data.message);
+          localStorage.setItem("usernameGrid", response.data.id);
+          localStorage.setItem("organizacionGrid", response.data.nombre);
           router.push("/");
         })
         .catch((error) => {
