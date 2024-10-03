@@ -22,7 +22,7 @@ import toast from "react-hot-toast";
 import { Organizacion, Recurso } from "@prisma/client";
 import Image from "next/image";
 import deleteIcon from "@/imgs/deleteIcon.png";
-import { resourceLimits } from "worker_threads";
+import VerHorario from "@/Components/verHorario";
 
 function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -39,6 +39,11 @@ function HomePage() {
   const router = useRouter();
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const {
+    isOpen: isHorarioOpen,
+    onOpen: onHorarioOpen,
+    onOpenChange: onHorarioOpenChange,
+  } = useDisclosure();
 
   useEffect(() => {
     const usdata = localStorage.getItem("usernameGrid");
@@ -144,6 +149,11 @@ function HomePage() {
       });
   }
 
+  function handleVerHorario(recurso: any) {
+    setSelectedResource(recurso);
+    onHorarioOpen();
+  }
+
   return (
     <div className="flex items-center justify-center gap-5 min-h-screen min-w-screen flex-col">
       {loading ? (
@@ -170,7 +180,14 @@ function HomePage() {
                       <TableCell>{recurso.nombre}</TableCell>
                       <TableCell>{recurso.username}</TableCell>
                       <TableCell>{recurso.Password}</TableCell>
-                      <TableCell>Ver horario</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleVerHorario(recurso)}
+                          className="underline"
+                        >
+                          Ver horario
+                        </button>
+                      </TableCell>
                       <TableCell>
                         {recurso.estado === "Disponible" ? (
                           <p className="text-green-600 font-bold">Disponible</p>
@@ -221,7 +238,14 @@ function HomePage() {
                   {otrosRecursos.map((recurso: Recurso) => (
                     <TableRow>
                       <TableCell>{recurso.nombre}</TableCell>
-                      <TableCell>Ver horario</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleVerHorario(recurso)}
+                          className="underline"
+                        >
+                          Ver horario
+                        </button>
+                      </TableCell>
                       <TableCell>
                         {getOrgName(recurso.organizacionId)}
                       </TableCell>
@@ -275,6 +299,11 @@ function HomePage() {
           )}
         </ModalContent>
       </Modal>
+      <VerHorario
+        recurso={selectedResource}
+        isOpen={isHorarioOpen}
+        onOpenChange={onHorarioOpenChange}
+      />
     </div>
   );
 }
