@@ -1,6 +1,11 @@
 "use client";
 import {
   Button,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Spinner,
   Table,
   TableBody,
@@ -8,12 +13,16 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  useDisclosure,
 } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Organizacion, Recurso } from "@prisma/client";
+import Image from "next/image";
+import deleteIcon from "@/imgs/deleteIcon.png";
+import { resourceLimits } from "worker_threads";
 
 function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -25,7 +34,11 @@ function HomePage() {
   const [misRecursos, setMisRecursos] = useState([]);
   const [otrosRecursos, setOtrosRecursos] = useState([]);
 
+  const [selectedResource, setSelectedResource] = useState();
+
   const router = useRouter();
+
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   useEffect(() => {
     const usdata = localStorage.getItem("usernameGrid");
@@ -109,6 +122,28 @@ function HomePage() {
     return "Desconocido";
   }
 
+  function eliminarRecurso(recurso: any) {
+    setSelectedResource(recurso);
+    onOpen();
+  }
+
+  function handleEliminarRecurso(onClose: any) {
+    axios
+      .delete("/api/recurso/" + selectedResource.id)
+      .then((response) => {
+        toast.success("Recurso eliminado exitosamente.");
+        fetchMisRecursos();
+        onClose();
+      })
+      .catch((error) => {
+        if (error.response) {
+          toast.error(error.response.data.message, { id: "t" });
+        } else {
+          toast.error(error.message, { id: "t" });
+        }
+      });
+  }
+
   return (
     <div className="flex items-center justify-center gap-5 min-h-screen min-w-screen flex-col">
       {loading ? (
@@ -127,6 +162,7 @@ function HomePage() {
                   <TableColumn>Contraseña</TableColumn>
                   <TableColumn>Horario</TableColumn>
                   <TableColumn>Estado</TableColumn>
+                  <TableColumn>Acciones</TableColumn>
                 </TableHeader>
                 <TableBody>
                   {misRecursos.map((recurso: Recurso) => (
@@ -149,6 +185,21 @@ function HomePage() {
                             )}
                           </>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          color="danger"
+                          isIconOnly
+                          size="sm"
+                          onPress={() => eliminarRecurso(recurso)}
+                        >
+                          <Image
+                            className="w-5"
+                            src={deleteIcon}
+                            alt={"Eliminar"}
+                            title="Eliminar"
+                          />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -203,6 +254,27 @@ function HomePage() {
           </div>
         </>
       )}
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                ¿Eliminar Recurso "{selectedResource.nombre}?"
+              </ModalHeader>
+              <ModalBody>Esta acción es permanente.</ModalBody>
+              <ModalFooter>
+                <Button onPress={onClose}>Cancelar</Button>
+                <Button
+                  color="danger"
+                  onPress={() => handleEliminarRecurso(onClose)}
+                >
+                  Eliminar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
