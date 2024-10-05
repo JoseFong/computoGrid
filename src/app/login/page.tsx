@@ -1,82 +1,115 @@
-"use client";
-import { Button, Input } from "@nextui-org/react";
-import React, { useState } from "react";
-import { textoVacio } from "@/utils/validaciones";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+"use client"
+
+import { Button, Image, Input } from "@nextui-org/react"
+import { useEffect, useState } from "react"
+import toast from "react-hot-toast"
+import { usePathname, useRouter } from "next/navigation"
+import { EyeSlashFilledIcon } from "@/Components/ui/EyeSlashFilledIcon"
+import { EyeFilledIcon } from "@/Components/ui/EyeFilledIcon"
+import { authenticate, AuthState } from "@/libs/actions"
+import { UserFilledIcon } from "@/Components/ui/UserFilledIcon"
+import { KeyFilledIcon } from "@/Components/ui/KeyFilledIcon"
+import escudoUABC from "@/imgs/UABC_escudo_SER-PNG.png"
+import { signIn, useSession } from "next-auth/react"
 
 function Login() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [isPassVisible, setIsPassVisible] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-  const router = useRouter();
-
-  function login() {
-    try {
-      if (textoVacio(username) || textoVacio(password))
-        throw new Error("Complete todos los campos.");
-
-      const data = {
-        username: username,
-        password: password,
-      };
-
-      axios
-        .post("/api/login", data)
-        .then((response) => {
-          toast.success("Inicio de sesión exitoso.", { id: "t" });
-          localStorage.setItem("usernameGrid", response.data.id);
-          localStorage.setItem("organizacionGrid", response.data.nombre);
-          router.push("/");
-        })
-        .catch((error) => {
-          if (error.response) {
-            toast.error(error.response.data.message, { id: "t" });
-          } else {
-            toast.error(error.message, { id: "t" });
-          }
-        });
-    } catch (e: any) {
-      toast.error(e.message, { id: "t" });
-    }
-  }
+  const toggleVisibility = () => setIsPassVisible(!isPassVisible)
 
   function registrar() {
-    router.push("/registro");
+    router.push("/registro")
+  }
+
+  const handleLogin = async (formData: FormData) => {
+    setLoading(true)
+
+    const res = await signIn("credentials", {
+      username: formData.get("username"),
+      password: formData.get("password"),
+      redirect: false,
+    })
+
+    setLoading(false)
+
+    if (!res) return
+
+    if (!res.ok) {
+      toast.error(res.error, { id: "error" })
+      return
+    }
+
+    router.push("/")
   }
 
   return (
-    <div className="w-screen h-screen bg-zinc-200 flex items-center justify-center">
-      <div className="bg-white p-5 rounded-xl shadow-xl flex flex-col gap-4">
-        <h1 className="text-lg font-bold">Iniciar Sesión</h1>
+    <div className="w-screen h-screen bg-slate-200 flex items-center justify-center">
+      <form
+        action={handleLogin}
+        className="bg-white p-5 rounded-xl shadow-xl flex flex-col gap-4"
+      >
+        <Image
+          src={escudoUABC.src}
+          alt="Escudo de la Universidad Autónoma de Baja California"
+          width={60}
+          radius="md"
+          classNames={{
+            wrapper: "self-center",
+          }}
+        />
+        <h1 className="text-xl font-bold text-center">Portal de acceso Grid</h1>
         <Input
+          name="username"
           label="Usuario"
+          placeholder="Nombre de usuario"
           labelPlacement="outside"
-          placeholder="Usuario"
-          value={username}
+          variant="bordered"
+          isRequired
           type="text"
-          onChange={(e) => setUsername(e.target.value)}
+          startContent={<UserFilledIcon className="text-default-400 size-5" />}
         />
         <Input
+          name="password"
           label="Contraseña"
-          labelPlacement="outside"
           placeholder="Contraseña"
-          value={password}
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
+          labelPlacement="outside"
+          variant="bordered"
+          isRequired
+          type={isPassVisible ? "text" : "password"}
+          startContent={<KeyFilledIcon className="text-default-400 size-5" />}
+          endContent={
+            <button
+              className="focus:outline-none"
+              type="button"
+              onClick={toggleVisibility}
+              aria-label="toggle password visibility"
+            >
+              {isPassVisible ? (
+                <EyeSlashFilledIcon className="size-5 text-default-400 pointer-events-none" />
+              ) : (
+                <EyeFilledIcon className="size-5 text-default-400 pointer-events-none" />
+              )}
+            </button>
+          }
         />
-        <div className="flex flex-col gap-1">
-          <Button color="primary" onPress={login}>
-            Iniciar Sesión
+        <div className="flex flex-col gap-2">
+          <Button
+            color="primary"
+            className="font-bold"
+            isLoading={loading}
+            type="submit"
+          >
+            {loading ? "Iniciando sesión..." : "Iniciar sesión"}
           </Button>
           <button className="text-sm underline" onClick={registrar}>
             Registrar organización
           </button>
         </div>
-      </div>
+      </form>
     </div>
-  );
+  )
 }
 
-export default Login;
+export default Login
