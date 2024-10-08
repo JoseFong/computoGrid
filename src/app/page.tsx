@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Button,
@@ -15,134 +15,145 @@ import {
   TableHeader,
   TableRow,
   useDisclosure,
-} from "@nextui-org/react"
-import React, { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import axios from "axios"
-import toast from "react-hot-toast"
-import { Organizacion, Recurso } from "@prisma/client"
-import Image from "next/image"
-import deleteIcon from "@/imgs/deleteIcon.png"
-import VerHorario from "@/Components/verHorario"
-import { signOut, useSession } from "next-auth/react"
+} from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Organizacion, Recurso } from "@prisma/client";
+import Image from "next/image";
+import deleteIcon from "@/imgs/deleteIcon.png";
+import VerHorario from "@/Components/verHorario";
+import { signOut, useSession } from "next-auth/react";
+import ReservarRecurso from "@/Components/reservarRecurso";
 
 function HomePage() {
-  const [loadingMyRes, setLoadingMyRes] = useState(true)
-  const [loadingOtherRes, setLoadingOtherRes] = useState(true)
-  const [loadingOrg, setLoadingOrg] = useState(true)
-  const { data: session } = useSession()
-  const orgName = session?.user?.name ?? ""
-  const orgId = session?.user?.id ?? ""
+  const [loadingMyRes, setLoadingMyRes] = useState(true);
+  const [loadingOtherRes, setLoadingOtherRes] = useState(true);
+  const [loadingOrg, setLoadingOrg] = useState(true);
+  const { data: session } = useSession();
+  const orgName = session?.user?.name ?? "";
+  const orgId = session?.user?.id ?? "";
 
-  const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([])
+  const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([]);
 
-  const [misRecursos, setMisRecursos] = useState([])
-  const [otrosRecursos, setOtrosRecursos] = useState([])
+  const [misRecursos, setMisRecursos] = useState([]);
+  const [otrosRecursos, setOtrosRecursos] = useState([]);
 
-  const [selectedResource, setSelectedResource] = useState()
+  const [selectedResource, setSelectedResource] = useState();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     isOpen: isHorarioOpen,
     onOpen: onHorarioOpen,
     onOpenChange: onHorarioOpenChange,
-  } = useDisclosure()
+  } = useDisclosure();
+  const {
+    isOpen: isResOpen,
+    onOpen: onResOpen,
+    onOpenChange: onResOpenChange,
+  } = useDisclosure();
 
   useEffect(() => {
     if (orgId !== "") {
-      fetchMisRecursos()
-      fetchRecursosOtros()
-      fetchOrganizaciones()
+      fetchMisRecursos();
+      fetchRecursosOtros();
+      fetchOrganizaciones();
     }
-  }, [orgId])
+  }, [orgId]);
 
   async function fetchOrganizaciones() {
     axios
       .get("/api/organizacion")
       .then((response) => {
-        setOrganizaciones(response.data)
-        setLoadingOrg(false)
+        setOrganizaciones(response.data);
+        setLoadingOrg(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   async function fetchMisRecursos() {
     axios
       .get("/api/recursosMios/" + orgId)
       .then((response) => {
-        setMisRecursos(response.data)
-        setLoadingMyRes(false)
+        setMisRecursos(response.data);
+        setLoadingMyRes(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   async function fetchRecursosOtros() {
     axios
       .get("/api/recursosDeOtros/" + orgId)
       .then((response) => {
-        setOtrosRecursos(response.data)
-        setLoadingOtherRes(false)
+        setOtrosRecursos(response.data);
+        setLoadingOtherRes(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   function registrarRecurso() {
-    router.push("/registrarRecurso")
+    router.push("/registrarRecurso");
   }
 
   function getOrgName(id: number) {
     const org: Organizacion = organizaciones.find(
       (org: Organizacion) => org.id === id
-    )
-    if (org) return org.nombre
-    return "Desconocido"
+    );
+    if (org) return org.nombre;
+    return "Desconocido";
   }
 
   function eliminarRecurso(recurso: any) {
-    setSelectedResource(recurso)
-    onOpen()
+    setSelectedResource(recurso);
+    onOpen();
   }
 
   function handleEliminarRecurso(onClose: any) {
     axios
       .delete("/api/recurso/" + selectedResource.id)
       .then((response) => {
-        toast.success("Recurso eliminado exitosamente.")
-        fetchMisRecursos()
-        onClose()
+        toast.success("Recurso eliminado exitosamente.");
+        fetchMisRecursos();
+        onClose();
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   function handleVerHorario(recurso: any) {
-    setSelectedResource(recurso)
-    onHorarioOpen()
+    setSelectedResource(recurso);
+    onHorarioOpen();
+  }
+
+  function handleReservarRecurso(recurso: any) {
+    setSelectedResource(recurso);
+    onResOpen();
   }
 
   return (
@@ -158,6 +169,7 @@ function HomePage() {
               <TableColumn>Usuario</TableColumn>
               <TableColumn>Contraseña</TableColumn>
               <TableColumn>Horario</TableColumn>
+              <TableColumn>Reservaciones</TableColumn>
               <TableColumn>Estado</TableColumn>
               <TableColumn>Acciones</TableColumn>
             </TableHeader>
@@ -174,6 +186,9 @@ function HomePage() {
                     >
                       Ver horario
                     </button>
+                  </TableCell>
+                  <TableCell>
+                    <button className="underline">Ver reservaciones</button>
                   </TableCell>
                   <TableCell>
                     {recurso.estado === "Disponible" ? (
@@ -248,7 +263,14 @@ function HomePage() {
                       </>
                     )}
                   </TableCell>
-                  <TableCell>Reservar</TableCell>
+                  <TableCell>
+                    <button
+                      className="underline"
+                      onClick={() => handleReservarRecurso(recurso)}
+                    >
+                      Reservar
+                    </button>
+                  </TableCell>
                   <TableCell>Usar</TableCell>
                 </TableRow>
               ))}
@@ -286,8 +308,13 @@ function HomePage() {
         isOpen={isHorarioOpen}
         onOpenChange={onHorarioOpenChange}
       />
+      <ReservarRecurso
+        onOpenChange={onResOpenChange}
+        isOpen={isResOpen}
+        recurso={selectedResource}
+      />
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;
