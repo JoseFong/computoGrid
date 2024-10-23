@@ -26,6 +26,7 @@ import deleteIcon from "@/imgs/deleteIcon.png";
 import VerHorario from "@/Components/verHorario";
 import { signOut, useSession } from "next-auth/react";
 import ReservarRecurso from "@/Components/reservarRecurso";
+import VerReservaciones from "@/Components/verReservaciones";
 
 function HomePage() {
   const [loadingMyRes, setLoadingMyRes] = useState(true);
@@ -54,6 +55,12 @@ function HomePage() {
     isOpen: isResOpen,
     onOpen: onResOpen,
     onOpenChange: onResOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isVROpen,
+    onOpen: onVROpen,
+    onOpenChange: onVROpenChange,
   } = useDisclosure();
 
   useEffect(() => {
@@ -156,10 +163,22 @@ function HomePage() {
     onResOpen();
   }
 
+  function handleVerReservaciones(recurso: any) {
+    setSelectedResource(recurso);
+    onVROpen();
+  }
+
+  function usarRecurso(recurso: any) {
+    const data = {
+      recursoId: recurso.id,
+      orgId: orgId,
+    };
+  }
+
   return (
     <div className="flex items-center justify-center gap-5 min-h-screen min-w-screen flex-col">
       <h1 className="text-xl font-bold">Bienvenido, {orgName}</h1>
-      <div className="flex flex-row gap-20">
+      <div className="flex flex-col gap-10">
         <div className="flex flex-col">
           <h1 className="text-lg font-bold">Mis recursos</h1>
 
@@ -188,7 +207,12 @@ function HomePage() {
                     </button>
                   </TableCell>
                   <TableCell>
-                    <button className="underline">Ver reservaciones</button>
+                    <button
+                      className="underline"
+                      onClick={() => handleVerReservaciones(recurso)}
+                    >
+                      Ver reservaciones
+                    </button>
                   </TableCell>
                   <TableCell>
                     {recurso.estado === "Disponible" ? (
@@ -231,6 +255,7 @@ function HomePage() {
               <TableColumn>Horario</TableColumn>
               <TableColumn>Propietario</TableColumn>
               <TableColumn>Estado</TableColumn>
+              <TableColumn>Ver Reservaciones</TableColumn>
               <TableColumn>Reservar</TableColumn>
               <TableColumn>Usar</TableColumn>
             </TableHeader>
@@ -266,12 +291,27 @@ function HomePage() {
                   <TableCell>
                     <button
                       className="underline"
+                      onClick={() => handleVerReservaciones(recurso)}
+                    >
+                      Ver reservaciones
+                    </button>
+                  </TableCell>
+                  <TableCell>
+                    <button
+                      className="underline"
                       onClick={() => handleReservarRecurso(recurso)}
                     >
                       Reservar
                     </button>
                   </TableCell>
-                  <TableCell>Usar</TableCell>
+                  <TableCell>
+                    <button
+                      className="underline"
+                      onClick={() => usarRecurso(recurso)}
+                    >
+                      Usar
+                    </button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -311,6 +351,11 @@ function HomePage() {
       <ReservarRecurso
         onOpenChange={onResOpenChange}
         isOpen={isResOpen}
+        recurso={selectedResource}
+      />
+      <VerReservaciones
+        isOpen={isVROpen}
+        onOpenChange={onVROpenChange}
         recurso={selectedResource}
       />
     </div>
