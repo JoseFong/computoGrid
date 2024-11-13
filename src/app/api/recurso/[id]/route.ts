@@ -8,6 +8,19 @@ interface Params{
 export async function DELETE(req:NextRequest,{params}:{params:Params}){
     try{
         const id:number = parseInt(params.id)
+
+        const reservaciones = await prisma.reservacion.deleteMany({
+            where: {
+                recursoId: id
+            }
+        })
+
+        const logs = await prisma.log.deleteMany({
+            where:{
+                recursoId: id
+            }
+        })
+
         const recursos = await prisma.recurso.delete({
             where:{
                 id: id

@@ -34,17 +34,11 @@ model Recurso {
 }
 
 model Log {
-  id                Int          @id @default(autoincrement())
-  recurso           Recurso      @relation(fields: [recursoId], references: [id])
-  ocupante          Organizacion @relation(fields: [organizacionId], references: [id])
-  nombreRecurso     String
-  nombreOcupante    String
-  nombrePropietario String
-  dia               String
-  horaInicio        String
-  horaFin           String
-  recursoId         Int
-  organizacionId    Int
+  id             Int          @id @default(autoincrement())
+  recurso        Recurso      @relation(fields: [recursoId], references: [id])
+  Organizacion   Organizacion @relation(fields: [organizacionId], references: [id])
+  organizacionId Int
+  recursoId      Int
 }
 
 model Reservacion {

@@ -27,6 +27,7 @@ import VerHorario from "@/Components/verHorario";
 import { signOut, useSession } from "next-auth/react";
 import ReservarRecurso from "@/Components/reservarRecurso";
 import VerReservaciones from "@/Components/verReservaciones";
+import UsarRecurso from "@/Components/usarRecurso";
 
 function HomePage() {
   const [loadingMyRes, setLoadingMyRes] = useState(true);
@@ -61,6 +62,12 @@ function HomePage() {
     isOpen: isVROpen,
     onOpen: onVROpen,
     onOpenChange: onVROpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isUsOpen,
+    onOpen: onUsOpen,
+    onOpenChange: onUsOpenChange,
   } = useDisclosure();
 
   useEffect(() => {
@@ -169,10 +176,8 @@ function HomePage() {
   }
 
   function usarRecurso(recurso: any) {
-    const data = {
-      recursoId: recurso.id,
-      orgId: orgId,
-    };
+    setSelectedResource(recurso);
+    onUsOpen();
   }
 
   return (
@@ -357,6 +362,12 @@ function HomePage() {
         isOpen={isVROpen}
         onOpenChange={onVROpenChange}
         recurso={selectedResource}
+      />
+      <UsarRecurso
+        recurso={selectedResource}
+        id={orgId}
+        isOpen={isUsOpen}
+        onOpenChange={onUsOpenChange}
       />
     </div>
   );
