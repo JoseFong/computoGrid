@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Button,
@@ -17,163 +17,194 @@ import {
   TableRow,
   Tabs,
   useDisclosure,
-} from "@nextui-org/react"
-import React, { useEffect, useState } from "react"
-import axios from "axios"
-import toast from "react-hot-toast"
-import { Organizacion, Recurso } from "@prisma/client"
-import Image from "next/image"
-import deleteIcon from "@/imgs/deleteIcon.png"
-import VerHorario from "@/Components/verHorario"
-import { useSession } from "next-auth/react"
-import ReservarRecurso from "@/Components/reservarRecurso"
-import VerReservaciones from "@/Components/verReservaciones"
-import UsarRecurso from "@/Components/usarRecurso"
-import PlusIcon from "@/Components/ui/PlusIcon"
-import ActionBar from "@/Components/ActionBar"
+} from "@nextui-org/react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { Organizacion, Recurso } from "@prisma/client";
+import Image from "next/image";
+import deleteIcon from "@/imgs/deleteIcon.png";
+import VerHorario from "@/Components/verHorario";
+import { useSession } from "next-auth/react";
+import ReservarRecurso from "@/Components/reservarRecurso";
+import VerReservaciones from "@/Components/verReservaciones";
+import UsarRecurso from "@/Components/usarRecurso";
+import PlusIcon from "@/Components/ui/PlusIcon";
+import ActionBar from "@/Components/ActionBar";
+import Descripcion from "@/Components/descripcion";
+import DejarDeUsar from "@/Components/dejarDeUsar";
+import VerLogs from "@/Components/verLogs";
 
 function HomePage() {
-  const [loadingMyRes, setLoadingMyRes] = useState(true)
-  const [loadingOtherRes, setLoadingOtherRes] = useState(true)
-  const [loadingOrg, setLoadingOrg] = useState(true)
-  const { data: session } = useSession()
-  const orgName = session?.user?.name ?? ""
-  const orgId = session?.user?.id ?? ""
+  const [loadingMyRes, setLoadingMyRes] = useState(true);
+  const [loadingOtherRes, setLoadingOtherRes] = useState(true);
+  const [loadingOrg, setLoadingOrg] = useState(true);
+  const { data: session } = useSession();
+  const orgName = session?.user?.name ?? "";
+  const orgId = session?.user?.id ?? "";
 
-  const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([])
+  const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([]);
 
-  const [misRecursos, setMisRecursos] = useState([])
-  const [otrosRecursos, setOtrosRecursos] = useState([])
+  const [misRecursos, setMisRecursos] = useState([]);
+  const [otrosRecursos, setOtrosRecursos] = useState([]);
 
-  const [selectedResource, setSelectedResource] = useState()
+  const [selectedResource, setSelectedResource] = useState();
 
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const {
     isOpen: isHorarioOpen,
     onOpen: onHorarioOpen,
     onOpenChange: onHorarioOpenChange,
-  } = useDisclosure()
+  } = useDisclosure();
   const {
     isOpen: isResOpen,
     onOpen: onResOpen,
     onOpenChange: onResOpenChange,
-  } = useDisclosure()
+  } = useDisclosure();
 
   const {
     isOpen: isVROpen,
     onOpen: onVROpen,
     onOpenChange: onVROpenChange,
-  } = useDisclosure()
+  } = useDisclosure();
 
   const {
     isOpen: isUsOpen,
     onOpen: onUsOpen,
     onOpenChange: onUsOpenChange,
-  } = useDisclosure()
+  } = useDisclosure();
+
+  const {
+    isOpen: isDescOpen,
+    onOpen: onDescOpen,
+    onOpenChange: onDescOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isDejarOpen,
+    onOpen: onDejarOpen,
+    onOpenChange: onDejarOpenChange,
+  } = useDisclosure();
+
+  const {
+    isOpen: isLogsOpen,
+    onOpen: onLogsOpen,
+    onOpenChange: onLogsOpenChange,
+  } = useDisclosure();
 
   useEffect(() => {
     if (orgId !== "") {
-      fetchMisRecursos()
-      fetchRecursosOtros()
-      fetchOrganizaciones()
+      fetchMisRecursos();
+      fetchRecursosOtros();
+      fetchOrganizaciones();
     }
-  }, [orgId])
+  }, [orgId]);
 
   async function fetchOrganizaciones() {
     axios
       .get("/api/organizacion")
       .then((response) => {
-        setOrganizaciones(response.data)
-        setLoadingOrg(false)
+        setOrganizaciones(response.data);
+        setLoadingOrg(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   async function fetchMisRecursos() {
     axios
       .get("/api/recursosMios/" + orgId)
       .then((response) => {
-        setMisRecursos(response.data)
-        setLoadingMyRes(false)
+        setMisRecursos(response.data);
+        setLoadingMyRes(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   async function fetchRecursosOtros() {
     axios
       .get("/api/recursosDeOtros/" + orgId)
       .then((response) => {
-        setOtrosRecursos(response.data)
-        setLoadingOtherRes(false)
+        setOtrosRecursos(response.data);
+        setLoadingOtherRes(false);
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
   function getOrgName(id: number) {
     const org: Organizacion = organizaciones.find(
       (org: Organizacion) => org.id === id
-    )
-    if (org) return org.nombre
-    return "Desconocido"
+    );
+    if (org) return org.nombre;
+    return "Desconocido";
   }
 
   function eliminarRecurso(recurso: any) {
-    setSelectedResource(recurso)
-    onOpen()
+    setSelectedResource(recurso);
+    onOpen();
   }
 
   function handleEliminarRecurso(onClose: any) {
     axios
       .delete("/api/recurso/" + selectedResource.id)
       .then((response) => {
-        toast.success("Recurso eliminado exitosamente.")
-        fetchMisRecursos()
-        onClose()
+        toast.success("Recurso eliminado exitosamente.");
+        fetchMisRecursos();
+        onClose();
       })
       .catch((error) => {
         if (error.response) {
-          toast.error(error.response.data.message, { id: "t" })
+          toast.error(error.response.data.message, { id: "t" });
         } else {
-          toast.error(error.message, { id: "t" })
+          toast.error(error.message, { id: "t" });
         }
-      })
+      });
   }
 
   function handleVerHorario(recurso: any) {
-    setSelectedResource(recurso)
-    onHorarioOpen()
+    setSelectedResource(recurso);
+    onHorarioOpen();
   }
 
   function handleReservarRecurso(recurso: any) {
-    setSelectedResource(recurso)
-    onResOpen()
+    setSelectedResource(recurso);
+    onResOpen();
   }
 
   function handleVerReservaciones(recurso: any) {
-    setSelectedResource(recurso)
-    onVROpen()
+    setSelectedResource(recurso);
+    onVROpen();
   }
 
   function usarRecurso(recurso: any) {
-    setSelectedResource(recurso)
-    onUsOpen()
+    setSelectedResource(recurso);
+    onUsOpen();
+  }
+
+  function verDescripcion(recurso: any) {
+    setSelectedResource(recurso);
+    onDescOpen();
+  }
+
+  function dejarDeUsar(recurso: any) {
+    setSelectedResource(recurso);
+    onDejarOpen();
   }
 
   return (
@@ -194,6 +225,7 @@ function HomePage() {
                   <TableColumn>Horario</TableColumn>
                   <TableColumn>Reservaciones</TableColumn>
                   <TableColumn>Estado</TableColumn>
+                  <TableColumn>Descripción</TableColumn>
                   <TableColumn>Acciones</TableColumn>
                 </TableHeader>
                 <TableBody
@@ -231,10 +263,18 @@ function HomePage() {
                                 Reservado
                               </p>
                             ) : (
-                              <p className="text-red-800 font-bold">En uso</p>
+                              <p className="text-red-600 font-bold">En uso</p>
                             )}
                           </>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <button
+                          className="underline"
+                          onClick={() => verDescripcion(recurso)}
+                        >
+                          Ver descripción
+                        </button>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -298,7 +338,7 @@ function HomePage() {
                                 Reservado
                               </p>
                             ) : (
-                              <p className="text-red-800 font-bold">En uso</p>
+                              <p className="text-red-600 font-bold">En uso</p>
                             )}
                           </>
                         )}
@@ -320,12 +360,21 @@ function HomePage() {
                         </button>
                       </TableCell>
                       <TableCell>
-                        <button
-                          className="underline"
-                          onClick={() => usarRecurso(recurso)}
-                        >
-                          Usar
-                        </button>
+                        {orgId == recurso.orgUsandola ? (
+                          <button
+                            className="underline"
+                            onClick={() => dejarDeUsar(recurso)}
+                          >
+                            Dejar de usar
+                          </button>
+                        ) : (
+                          <button
+                            className="underline"
+                            onClick={() => usarRecurso(recurso)}
+                          >
+                            Usar
+                          </button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -334,6 +383,7 @@ function HomePage() {
             </div>
           </Tab>
         </Tabs>
+        <Button onPress={onLogsOpen}>Ver logs</Button>
         <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
           <ModalContent>
             {(onClose) => (
@@ -375,10 +425,23 @@ function HomePage() {
           id={orgId}
           isOpen={isUsOpen}
           onOpenChange={onUsOpenChange}
+          fetchRecursosOtros={fetchRecursosOtros}
         />
+        <Descripcion
+          isOpen={isDescOpen}
+          onOpenChange={onDescOpenChange}
+          recurso={selectedResource}
+        />
+        <DejarDeUsar
+          isOpen={isDejarOpen}
+          onOpenChange={onDejarOpenChange}
+          recurso={selectedResource}
+          fetch={fetchRecursosOtros}
+        />
+        <VerLogs isOpen={isLogsOpen} onOpenChange={onLogsOpenChange} />
       </div>
     </div>
-  )
+  );
 }
 
-export default HomePage
+export default HomePage;

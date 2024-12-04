@@ -1,49 +1,50 @@
-"use client"
-import { textoVacio, validarHoras } from "@/utils/validaciones"
-import { Button, Checkbox, Input, Spinner } from "@nextui-org/react"
-import axios from "axios"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import React, { useState } from "react"
-import toast from "react-hot-toast"
+"use client";
+import { textoVacio, validarHoras } from "@/utils/validaciones";
+import { Button, Checkbox, Input, Spinner } from "@nextui-org/react";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 function RegistrarRecurso() {
-  const { data: session } = useSession()
-  const orgId = session?.user?.id ?? ""
-  const [loading, setLoading] = useState(false)
+  const { data: session } = useSession();
+  const orgId = session?.user?.id ?? "";
+  const [loading, setLoading] = useState(false);
 
-  const [nombre, setNombre] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [passwordConfirm, setPasswordConfirm] = useState("")
+  const [nombre, setNombre] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [descripcion, setDescripcion] = useState("");
 
-  const [lunes, setLunes] = useState(false)
-  const [martes, setMartes] = useState(false)
-  const [miercoles, setMiercoles] = useState(false)
-  const [jueves, setJueves] = useState(false)
-  const [viernes, setViernes] = useState(false)
-  const [sabado, setSabado] = useState(false)
-  const [domingo, setDomingo] = useState(false)
+  const [lunes, setLunes] = useState(false);
+  const [martes, setMartes] = useState(false);
+  const [miercoles, setMiercoles] = useState(false);
+  const [jueves, setJueves] = useState(false);
+  const [viernes, setViernes] = useState(false);
+  const [sabado, setSabado] = useState(false);
+  const [domingo, setDomingo] = useState(false);
 
-  const [hilunes, setHilunes] = useState("")
-  const [hflunes, setHflunes] = useState("")
-  const [himartes, setHimartes] = useState("")
-  const [hfmartes, setHfmartes] = useState("")
-  const [himiercoles, setHimiercoles] = useState("")
-  const [hfmiercoles, setHfmiercoles] = useState("")
-  const [hijueves, setHijueves] = useState("")
-  const [hfjueves, setHfjueves] = useState("")
-  const [hiviernes, setHiviernes] = useState("")
-  const [hfviernes, setHfviernes] = useState("")
-  const [hisabado, setHisabado] = useState("")
-  const [hfsabado, setHfsabado] = useState("")
-  const [hidomingo, setHidomingo] = useState("")
-  const [hfdomingo, setHfdomingo] = useState("")
+  const [hilunes, setHilunes] = useState("");
+  const [hflunes, setHflunes] = useState("");
+  const [himartes, setHimartes] = useState("");
+  const [hfmartes, setHfmartes] = useState("");
+  const [himiercoles, setHimiercoles] = useState("");
+  const [hfmiercoles, setHfmiercoles] = useState("");
+  const [hijueves, setHijueves] = useState("");
+  const [hfjueves, setHfjueves] = useState("");
+  const [hiviernes, setHiviernes] = useState("");
+  const [hfviernes, setHfviernes] = useState("");
+  const [hisabado, setHisabado] = useState("");
+  const [hfsabado, setHfsabado] = useState("");
+  const [hidomingo, setHidomingo] = useState("");
+  const [hfdomingo, setHfdomingo] = useState("");
 
-  const router = useRouter()
+  const router = useRouter();
 
   function cancelar() {
-    router.push("/")
+    router.push("/");
   }
 
   function registrar() {
@@ -52,12 +53,13 @@ function RegistrarRecurso() {
         textoVacio(nombre) ||
         textoVacio(username) ||
         textoVacio(password) ||
-        textoVacio(passwordConfirm)
+        textoVacio(passwordConfirm) ||
+        textoVacio(descripcion)
       )
-        throw new Error("Complete todos los campos.")
+        throw new Error("Complete todos los campos.");
 
       if (password !== passwordConfirm)
-        throw new Error("Las contraseñas no concuerdan.")
+        throw new Error("Las contraseñas no concuerdan.");
 
       if (
         !lunes &&
@@ -68,92 +70,93 @@ function RegistrarRecurso() {
         !sabado &&
         !domingo
       )
-        throw new Error("Seleccione por lo menos un día.")
+        throw new Error("Seleccione por lo menos un día.");
 
-      const horario: any = {}
+      const horario: any = {};
 
       if (lunes) {
         if (textoVacio(hilunes) || textoVacio(hflunes))
-          throw new Error("Ingrese horas válidas para Lunes.")
+          throw new Error("Ingrese horas válidas para Lunes.");
         if (validarHoras(hilunes, hflunes))
-          throw new Error("Ingrese horas válidas para Lunes.")
-        horario.lunes = { inicio: hilunes, fin: hflunes }
+          throw new Error("Ingrese horas válidas para Lunes.");
+        horario.lunes = { inicio: hilunes, fin: hflunes };
       }
       if (martes) {
         if (textoVacio(himartes) || textoVacio(hfmartes))
-          throw new Error("Ingrese horas válidas para Martes.")
+          throw new Error("Ingrese horas válidas para Martes.");
         if (validarHoras(himartes, hfmartes))
-          throw new Error("Ingrese horas válidas para Martes.")
-        horario.martes = { inicio: himartes, fin: hfmartes }
+          throw new Error("Ingrese horas válidas para Martes.");
+        horario.martes = { inicio: himartes, fin: hfmartes };
       }
 
       if (miercoles) {
         if (textoVacio(himiercoles) || textoVacio(hfmiercoles))
-          throw new Error("Ingrese horas válidas para Miércoles.")
+          throw new Error("Ingrese horas válidas para Miércoles.");
         if (validarHoras(himiercoles, hfmiercoles))
-          throw new Error("Ingrese horas válidas para Miércoles.")
-        horario.miercoles = { inicio: himiercoles, fin: hfmiercoles }
+          throw new Error("Ingrese horas válidas para Miércoles.");
+        horario.miercoles = { inicio: himiercoles, fin: hfmiercoles };
       }
 
       if (jueves) {
         if (textoVacio(hijueves) || textoVacio(hfjueves))
-          throw new Error("Ingrese horas válidas para Jueves.")
+          throw new Error("Ingrese horas válidas para Jueves.");
         if (validarHoras(hijueves, hfjueves))
-          throw new Error("Ingrese horas válidas para Jueves.")
-        horario.jueves = { inicio: hijueves, fin: hfjueves }
+          throw new Error("Ingrese horas válidas para Jueves.");
+        horario.jueves = { inicio: hijueves, fin: hfjueves };
       }
 
       if (viernes) {
         if (textoVacio(hiviernes) || textoVacio(hfviernes))
-          throw new Error("Ingrese horas válidas para Viernes.")
+          throw new Error("Ingrese horas válidas para Viernes.");
         if (validarHoras(hiviernes, hfviernes))
-          throw new Error("Ingrese horas válidas para Viernes.")
-        horario.viernes = { inicio: hiviernes, fin: hfviernes }
+          throw new Error("Ingrese horas válidas para Viernes.");
+        horario.viernes = { inicio: hiviernes, fin: hfviernes };
       }
 
       if (sabado) {
         if (textoVacio(hisabado) || textoVacio(hfsabado))
-          throw new Error("Ingrese horas válidas para Sábado.")
+          throw new Error("Ingrese horas válidas para Sábado.");
         if (validarHoras(hisabado, hfsabado))
-          throw new Error("Ingrese horas válidas para Sábado.")
-        horario.sabado = { inicio: hisabado, fin: hfsabado }
+          throw new Error("Ingrese horas válidas para Sábado.");
+        horario.sabado = { inicio: hisabado, fin: hfsabado };
       }
 
       if (domingo) {
         if (textoVacio(hidomingo) || textoVacio(hfdomingo))
-          throw new Error("Ingrese horas válidas para Domingo.")
+          throw new Error("Ingrese horas válidas para Domingo.");
         if (validarHoras(hidomingo, hfdomingo))
-          throw new Error("Ingrese horas válidas para Domingo.")
-        horario.domingo = { inicio: hidomingo, fin: hfdomingo }
+          throw new Error("Ingrese horas válidas para Domingo.");
+        horario.domingo = { inicio: hidomingo, fin: hfdomingo };
       }
 
-      const horarioString = JSON.stringify(horario)
+      const horarioString = JSON.stringify(horario);
 
       const data = {
         nombre: nombre,
+        descripcion: descripcion,
         username: username,
         password: password,
         horario: horarioString,
         orgId: orgId,
-      }
+      };
 
-      setLoading(true)
+      setLoading(true);
       axios
         .post("/api/recurso", data)
         .then((response) => {
-          toast.success("Recurso registrado exitosamente.", { id: "t" })
-          setLoading(false)
-          router.push("/")
+          toast.success("Recurso registrado exitosamente.", { id: "t" });
+          setLoading(false);
+          router.push("/");
         })
         .catch((error) => {
           if (error.response) {
-            toast.error(error.response.data.message, { id: "t" })
+            toast.error(error.response.data.message, { id: "t" });
           } else {
-            toast.error(error.message, { id: "t" })
+            toast.error(error.message, { id: "t" });
           }
-        })
+        });
     } catch (e: any) {
-      toast.error(e.message, { id: "t" })
+      toast.error(e.message, { id: "t" });
     }
   }
 
@@ -170,6 +173,15 @@ function RegistrarRecurso() {
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
           />
+          <Input
+            type="text"
+            label="Descripción"
+            labelPlacement="outside"
+            placeholder="Descripción"
+            value={descripcion}
+            className="h-50"
+            onChange={(e) => setDescripcion(e.target.value)}
+          ></Input>
           <Input
             type="text"
             placeholder="Nombre de usuario"
@@ -457,7 +469,7 @@ function RegistrarRecurso() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
 
-export default RegistrarRecurso
+export default RegistrarRecurso;

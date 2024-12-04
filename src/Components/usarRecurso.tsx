@@ -10,7 +10,19 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-function UsarRecurso({ recurso, id, isOpen, onOpenChange }) {
+function UsarRecurso({
+  recurso,
+  id,
+  isOpen,
+  onOpenChange,
+  fetchRecursosOtros,
+}: {
+  recurso: any;
+  id: any;
+  isOpen: any;
+  onOpenChange: any;
+  fetchRecursosOtros: () => void;
+}) {
   return (
     <>
       {recurso && (
@@ -19,6 +31,7 @@ function UsarRecurso({ recurso, id, isOpen, onOpenChange }) {
           id={id}
           isOpen={isOpen}
           onOpenChange={onOpenChange}
+          fetchRecursosOtros={fetchRecursosOtros}
         />
       )}
     </>
@@ -27,18 +40,30 @@ function UsarRecurso({ recurso, id, isOpen, onOpenChange }) {
 
 export default UsarRecurso;
 
-export function UsarRecursoModal({ recurso, id, isOpen, onOpenChange }) {
+export function UsarRecursoModal({
+  recurso,
+  id,
+  isOpen,
+  onOpenChange,
+  fetchRecursosOtros,
+}: {
+  recurso: any;
+  id: any;
+  isOpen: any;
+  onOpenChange: any;
+  fetchRecursosOtros: () => void;
+}) {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [titulo, setTitulo] = useState(
-    "¿Está seguro que quiere reservar el recurso?"
+    "¿Está seguro que quiere usar el recurso?"
   );
   const [aceptado, setAceptado] = useState(false);
 
   // Solo se ejecutará una vez cuando el componente se monte
   useEffect(() => {
     setAceptado(false);
-  }, [recurso]);
+  }, [recurso, onOpenChange]);
 
   const usar = () => {
     const data = {
@@ -50,9 +75,11 @@ export function UsarRecursoModal({ recurso, id, isOpen, onOpenChange }) {
       .post("/api/uso", data)
       .then((response) => {
         toast.success("Ahora está usando el recurso.");
+        console.log(JSON.stringify(response.data));
         setPass(response.data.password);
         setUser(response.data.username);
         setAceptado(true);
+        fetchRecursosOtros();
       })
       .catch((error) => {
         const errorMessage = error.response?.data?.message || error.message;

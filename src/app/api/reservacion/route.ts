@@ -8,6 +8,7 @@ export async function POST(req:NextRequest){
         const data = await req.json()
         const fechaString = data.dia
         let date = new Date(fechaString)
+        console.log(date)
         date.setDate(date.getDate()+1)
         const dia = date.toString().split(" ")
         const d = dia[0].toLowerCase()

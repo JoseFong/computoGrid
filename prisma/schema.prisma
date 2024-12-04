@@ -23,6 +23,7 @@ model Organizacion {
 model Recurso {
   id             Int           @id @default(autoincrement())
   nombre         String
+  descripcion    String
   username       String
   Password       String
   horario        String
@@ -31,14 +32,22 @@ model Recurso {
   organizacionId Int
   Log            Log[]
   Reservacion    Reservacion[]
+  orgUsandola    Int?
+  reservacion    Int?
+  log            Int?
 }
 
 model Log {
   id             Int          @id @default(autoincrement())
   recurso        Recurso      @relation(fields: [recursoId], references: [id])
   Organizacion   Organizacion @relation(fields: [organizacionId], references: [id])
+  fecha          String
+  inicio         String
+  fin            String
   organizacionId Int
   recursoId      Int
+  reservacion    Reservacion? @relation(fields: [reservacionId], references: [id])
+  reservacionId  Int?
 }
 
 model Reservacion {
@@ -50,4 +59,5 @@ model Reservacion {
   horaFin        String
   recursoId      Int
   organizacionId Int
+  Log            Log[]
 }

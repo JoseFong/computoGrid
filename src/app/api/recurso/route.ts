@@ -8,6 +8,7 @@ export async function POST(req:NextRequest) {
         const recurso =  await prisma.recurso.create({
             data:{
                 nombre: data.nombre,
+                descripcion: data.descripcion,
                 username: data.username,
                 Password: data.password,
                 horario: data.horario,
@@ -22,4 +23,13 @@ export async function POST(req:NextRequest) {
         return NextResponse.json({message:"Error interno del servidor."},{status:500})
     }
     
+}
+
+export async function GET(req:NextRequest){
+    try{
+        const recursos = await prisma.recurso.findMany()
+        return NextResponse.json(recursos)
+    }catch(e:any){
+        return NextResponse.json({message:"Error interno del servidor."},{status:500})
+    }
 }
